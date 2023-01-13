@@ -1,4 +1,5 @@
 import requests
+from datetime import date, timedelta
 
 
 
@@ -26,23 +27,31 @@ class GithubGraphQLClient:
         response = self.query(query_string=query)
         return response['data']['viewer']['login']
 
-    def get_pull_requests(self, user_name: str):
+    def get_pull_requests(self, user_name: str, last_n: int = 10, cursor: str = None):
+        if cursor is None:
+            offset = ""
+        else:
+            offset = f"before: \"{cursor}\""
+
         query = f"""
         {{
             user(login: "{user_name}") {{
-                pullRequests(last: 10) {{
+                pullRequests(last: {last_n} {offset}) {{
                     totalCount
-                    nodes {{
-                        createdAt
-                        title
-                        body
-                        baseRepository {{
-                            owner {{
-                                login
+                    edges {{
+                        cursor
+                        node {{
+                            createdAt
+                            title
+                            body
+                            baseRepository {{
+                                owner {{
+                                    login
+                                    id
+                                }}
+                                name
                                 id
                             }}
-                            name
-                            id
                         }}
                     }}
                 }}

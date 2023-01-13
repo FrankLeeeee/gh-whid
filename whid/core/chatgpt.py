@@ -9,16 +9,15 @@ class ChatGPT:
         "Summarize the following description into a list of points and translate the summary into simplified Chinese. "
         )
 
-    def __init__(self, api_key, model="text-davinci-003", max_token=1024):
+    def __init__(self, api_key: str, model: str="text-davinci-003"):
         self.api_key = api_key
         self.model = model
         self.set_credentials()
-        self.max_token = max_token
 
     def set_credentials(self):
         openai.api_key = self.api_key
 
-    def summarize(self, summary):
+    def summarize(self, summary, max_tokens: int=1024):
         # Set up the model and prompt
         prompt = f"{self.PROMPT_PREFIX}\n{summary}"
 
@@ -26,7 +25,7 @@ class ChatGPT:
         completion = openai.Completion.create(
             engine=self.model,
             prompt=prompt,
-            max_tokens=self.max_token,
+            max_tokens=max_tokens,
             n=1,
             stop=None,
             temperature=0.5,
